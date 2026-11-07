@@ -158,6 +158,27 @@
             gap: 6px;
         }
 
+        .day-notes-input {
+            width: 100%;
+            height: 38px;
+            padding: 4px 6px;
+            border: 1px dashed #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-family: inherit;
+            background: #fffdf4;
+            color: #744210;
+            resize: vertical;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .day-notes-input:focus {
+            outline: none;
+            border-color: #d69e2e;
+            background: #fff;
+        }
+
         .holiday-label {
             font-size: 0.75rem;
             font-weight: 600;
@@ -361,6 +382,7 @@
                     <th class="day-col">
                         <div class="day-header-content">
                             <span>${day.name}</span>
+                            <textarea class="day-notes-input" id="day-note-w${w}-${day.id}" placeholder="Co-op, event, notes..."></textarea>
                             <label class="holiday-label">
                                 <input type="checkbox" id="holiday-w${w}-${day.id}" onchange="toggleHoliday(${w}, '${day.id}')"> Holiday / Off
                             </label>
@@ -434,10 +456,10 @@
     }
 
     function addWeek() {
-        saveData(); // Save existing inputs before re-rendering
+        saveData();
         totalWeeks++;
         buildPlannerHTML();
-        loadData(); // Reapply saved data
+        loadData();
         saveData();
     }
 
@@ -505,21 +527,33 @@
         saveData();
     }
 
-    function cascadeLessonsForward(weekNum, secType, subId, startIndex, newTextForStart) {
+    function cascadeLessonsForward(startWeek, secType, subId, startIndex, newTextForStart) {
         let textToPush = newTextForStart;
+        let currWeek = startWeek;
+        let i = startIndex;
 
-        for (let i = startIndex; i < days.length; i++) {
-            const currentDayId = days[i].id;
-            const cell = document.getElementById(`cell-w${weekNum}-${secType}-${subId}-${currentDayId}`);
-            if (!cell) break;
+        while (textToPush && currWeek <= totalWeeks) {
+            while (i < days.length) {
+                const currentDayId = days[i].id;
+                const cell = document.getElementById(`cell-w${currWeek}-${secType}-${subId}-${currentDayId}`);
+                if (!cell) break;
 
-            const input = cell.querySelector('.lesson-input');
-            const existingText = input.value;
+                const input = cell.querySelector('.lesson-input');
+                const existingText = input.value;
 
-            input.value = textToPush;
-            textToPush = existingText;
+                input.value = textToPush;
+                textToPush = existingText;
 
-            if (!textToPush) break;
+                i++;
+                if (!textToPush) break;
+            }
+
+            if (textToPush && currWeek < totalWeeks) {
+                currWeek++;
+                i = 0;
+            } else {
+                break;
+            }
         }
     }
 
@@ -533,24 +567,16 @@
         const originalText = currentInput.value;
 
         if (val === 'move') {
-            if (dayIndex < days.length - 1) {
-                currentInput.value = "";
-                cascadeLessonsForward(weekNum, secType, subId, dayIndex + 1, originalText);
-            } else {
-                alert("You are on Friday! To move lessons to next week, copy them over manually.");
-            }
+            currentInput.value = "";
+            cascadeLessonsForward(weekNum, secType, subId, dayIndex + 1, originalText);
         }
 
         if (val === 'split') {
-            if (dayIndex < days.length - 1) {
-                const part1 = originalText ? (originalText + " (Part 1)") : "Part 1";
-                const part2 = originalText ? (originalText + " (Part 2)") : "Part 2";
+            const part1 = originalText ? (originalText + " (Part 1)") : "Part 1";
+            const part2 = originalText ? (originalText + " (Part 2)") : "Part 2";
 
-                currentInput.value = part1;
-                cascadeLessonsForward(weekNum, secType, subId, dayIndex + 1, part2);
-            } else {
-                alert("Cannot split past Friday in the same week.");
-            }
+            currentInput.value = part1;
+            cascadeLessonsForward(weekNum, secType, subId, dayIndex + 1, part2);
         }
 
         saveData();
@@ -575,13 +601,16 @@
     }
 
     function saveData() {
-        const data = { totalWeeks: totalWeeks, weeksDates: {}, holidays: {}, cells: {} };
+        const data = { totalWeeks: totalWeeks, weeksDates: {}, dayNotes: {}, holidays: {}, cells: {} };
 
         for (let w = 1; w <= totalWeeks; w++) {
             const dateInput = document.getElementById(`week-date-${w}`);
             if (dateInput) data.weeksDates[w] = dateInput.value;
 
             days.forEach(day => {
+                const noteInput = document.getElementById(`day-note-w${w}-${day.id}`);
+                if (noteInput) data.dayNotes[`w${w}-${day.id}`] = noteInput.value;
+
                 const holidayCb = document.getElementById(`holiday-w${w}-${day.id}`);
                 if (holidayCb) data.holidays[`w${w}-${day.id}`] = holidayCb.checked;
             });
@@ -605,11 +634,11 @@
             }
         });
 
-        localStorage.setItem('homeschoolPlannerHorizontal_v7', JSON.stringify(data));
+        localStorage.setItem('homeschoolPlannerHorizontal_v9', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('homeschoolPlannerHorizontal_v7');
+        const saved = localStorage.getItem('homeschoolPlannerHorizontal_v9');
         if (!saved) return;
 
         try {
@@ -623,6 +652,13 @@
                 Object.keys(data.weeksDates).forEach(w => {
                     const dateInput = document.getElementById(`week-date-${w}`);
                     if (dateInput) dateInput.value = data.weeksDates[w];
+                });
+            }
+
+            if (data.dayNotes) {
+                Object.keys(data.dayNotes).forEach(key => {
+                    const noteInput = document.getElementById(`day-note-${key}`);
+                    if (noteInput) noteInput.value = data.dayNotes[key];
                 });
             }
 
@@ -682,14 +718,14 @@
     }
 
     document.addEventListener('input', (e) => {
-        if (e.target.classList.contains('lesson-input') || e.target.classList.contains('date-input')) {
+        if (e.target.classList.contains('lesson-input') || e.target.classList.contains('date-input') || e.target.classList.contains('day-notes-input')) {
             saveData();
         }
     });
 
     function archivePlanner() {
         if (confirm("Are you sure you want to clear and archive this planner?")) {
-            localStorage.removeItem('homeschoolPlannerHorizontal_v7');
+            localStorage.removeItem('homeschoolPlannerHorizontal_v9');
             totalWeeks = 2;
             buildPlannerHTML();
         }
