@@ -291,7 +291,8 @@
         td.holiday-shaded, td.no-subject-shaded { 
             background-color: #edf2f7 !important; 
         }
-        td.holiday-shaded .lesson-cell-content, td.no-subject-shaded .lesson-cell-content { 
+        td.holiday-shaded textarea.lesson-input, td.no-subject-shaded textarea.lesson-input,
+        td.holiday-shaded .status-select, td.no-subject-shaded .status-select { 
             opacity: 0.25; 
             pointer-events: none; 
         }
@@ -634,11 +635,11 @@
             }
         });
 
-        localStorage.setItem('homeschoolPlannerHorizontal_v9', JSON.stringify(data));
+        localStorage.setItem('homeschoolPlannerHorizontal_v10', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('homeschoolPlannerHorizontal_v9');
+        const saved = localStorage.getItem('homeschoolPlannerHorizontal_v10');
         if (!saved) return;
 
         try {
@@ -725,7 +726,7 @@
 
     function archivePlanner() {
         if (confirm("Are you sure you want to clear and archive this planner?")) {
-            localStorage.removeItem('homeschoolPlannerHorizontal_v9');
+            localStorage.removeItem('homeschoolPlannerHorizontal_v10');
             totalWeeks = 2;
             buildPlannerHTML();
         }
