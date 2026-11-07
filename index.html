@@ -62,6 +62,8 @@
         }
 
         .btn:hover { background-color: #2b6cb0; }
+        .btn-danger { background-color: #e53e3e; }
+        .btn-danger:hover { background-color: #c53030; }
         .btn-archive { background-color: #e2e8f0; color: #4a5568; }
         .btn-archive:hover { background-color: #cbd5e0; }
 
@@ -81,6 +83,20 @@
             margin-bottom: 16px;
             padding-bottom: 8px;
             border-bottom: 2px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .date-input {
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            color: #4a5568;
         }
 
         .table-responsive {
@@ -95,8 +111,8 @@
 
         th, td {
             border: 1px solid #cbd5e0;
-            padding: 10px;
-            vertical-align: middle;
+            padding: 8px;
+            vertical-align: top;
         }
 
         th {
@@ -107,17 +123,27 @@
             text-align: center;
         }
 
-        th.day-col {
-            width: 18%;
+        .day-header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
         }
 
-        th.subject-col {
-            width: 28%;
-            text-align: left;
+        .holiday-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            color: #c53030;
+            cursor: pointer;
         }
+
+        th.day-col { width: 17%; }
+        th.subject-col { width: 15%; text-align: left; }
 
         .category-row-header {
-            background-color: #f7fafc;
             font-weight: 700;
             font-size: 0.95rem;
             padding: 8px 12px;
@@ -129,8 +155,9 @@
 
         .subject-cell {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             background: #fff;
+            vertical-align: middle;
         }
 
         .lesson-cell-content {
@@ -139,16 +166,19 @@
             gap: 6px;
         }
 
-        .lesson-input {
+        textarea.lesson-input {
             width: 100%;
-            padding: 6px 8px;
+            height: 52px;
+            padding: 6px;
             border: 1px solid #cbd5e0;
             border-radius: 4px;
             font-size: 0.85rem;
             box-sizing: border-box;
+            resize: vertical;
+            font-family: inherit;
         }
 
-        .lesson-input:focus {
+        textarea.lesson-input:focus {
             outline: none;
             border-color: #4299e1;
             box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
@@ -158,6 +188,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
         }
 
         .status-select {
@@ -175,19 +207,28 @@
         .status-select[data-status="move"] { background-color: #e9d8fd; color: #441239; border-color: #d6bcfa; }
         .status-select[data-status="split"] { background-color: #fed7d7; color: #742a2a; border-color: #feb2b2; }
 
-        .completed-cell .lesson-input {
+        .completed-cell textarea.lesson-input {
             text-decoration: line-through;
             opacity: 0.6;
         }
 
-        .checkbox-label {
-            font-size: 0.75rem;
+        .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-            cursor: pointer;
+            gap: 8px;
+            font-size: 0.75rem;
             color: #4a5568;
         }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+
+        td.holiday-shaded, td.no-subject-shaded { background-color: #e2e8f0 !important; }
+        td.holiday-shaded .lesson-cell-content, td.no-subject-shaded .lesson-cell-content { opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -196,10 +237,11 @@
     <header>
         <div>
             <h1>📖 Homeschool Lesson Plan Book</h1>
-            <small style="color: #718096;">Horizontal Weekly Grid</small>
+            <small style="color: #718096;">Horizontal Grid with Per-Subject Off Toggles</small>
         </div>
         <div class="header-actions">
-            <button class="btn" id="add-week-btn" onclick="toggleWeek3()">+ Add Week 3</button>
+            <button class="btn" onclick="addWeek()">+ Add Week</button>
+            <button class="btn btn-danger" onclick="removeWeek()" id="remove-week-btn" style="display:none;">- Remove Week</button>
             <button class="btn btn-archive" onclick="archivePlanner()">Archive & Clear</button>
         </div>
     </header>
@@ -251,12 +293,17 @@
 
     function buildPlannerHTML() {
         const container = document.getElementById('planner-container');
+        if (!container) return;
+
         let html = '';
 
         for (let w = 1; w <= totalWeeks; w++) {
             html += `
                 <div class="week-card" id="week-${w}">
-                    <div class="week-header">📅 Week ${w}</div>
+                    <div class="week-header">
+                        <span>📅 Week ${w}</span>
+                        <input type="text" class="date-input" id="week-date-${w}" placeholder="Enter dates (e.g. Nov 9 - Nov 13)">
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
@@ -265,7 +312,16 @@
             `;
 
             days.forEach(day => {
-                html += `<th class="day-col">${day.name}</th>`;
+                html += `
+                    <th class="day-col">
+                        <div class="day-header-content">
+                            <span>${day.name}</span>
+                            <label class="holiday-label">
+                                <input type="checkbox" id="holiday-w${w}-${day.id}" onchange="toggleHoliday(${w}, '${day.id}')"> Holiday / Off
+                            </label>
+                        </div>
+                    </th>
+                `;
             });
 
             html += `
@@ -292,17 +348,22 @@
                         html += `
                             <td id="cell-${cellId}">
                                 <div class="lesson-cell-content">
-                                    <input type="text" class="lesson-input" placeholder="${sub.placeholder}">
+                                    <textarea class="lesson-input" placeholder="${sub.placeholder}"></textarea>
                                     <div class="row-controls">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" onchange="toggleComplete('${cellId}')"> Done
-                                        </label>
-                                        <select class="status-select" onchange="updateStatus(this)" data-status="pending">
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" onchange="toggleComplete('${cellId}')"> Done
+                                            </label>
+                                            <label class="checkbox-label" style="color:#c53030;">
+                                                <input type="checkbox" id="nosub-${cellId}" onchange="toggleNoSubject('${cellId}')"> Off
+                                            </label>
+                                        </div>
+                                        <select class="status-select" onchange="handleStatusChange(this, ${w}, '${sec.type}', '${sub.id}', '${day.id}')" data-status="pending">
                                             <option value="pending">Normal</option>
                                             <option value="progress">In Progress</option>
                                             <option value="done">Completed</option>
-                                            <option value="move">Move Day</option>
-                                            <option value="split">Split</option>
+                                            <option value="move">Move Day ➔</option>
+                                            <option value="split">Split Lesson ⚡</option>
                                         </select>
                                     </div>
                                 </div>
@@ -324,117 +385,268 @@
 
         container.innerHTML = html;
         loadData();
-        updateWeek3ButtonText();
+        updateRemoveWeekButton();
     }
 
-    function toggleWeek3() {
-        totalWeeks = (totalWeeks === 2) ? 3 : 2;
+    function addWeek() {
+        totalWeeks++;
         buildPlannerHTML();
         saveData();
     }
 
-    function updateWeek3ButtonText() {
-        const btn = document.getElementById('add-week-btn');
-        if (totalWeeks === 3) {
-            btn.innerText = '- Remove Week 3';
-            btn.style.backgroundColor = '#e53e3e';
-        } else {
-            btn.innerText = '+ Add Week 3';
-            btn.style.backgroundColor = '#3182ce';
+    function removeWeek() {
+        if (totalWeeks > 1) {
+            totalWeeks--;
+            buildPlannerHTML();
+            saveData();
         }
+    }
+
+    function updateRemoveWeekButton() {
+        const btn = document.getElementById('remove-week-btn');
+        if (!btn) return;
+        btn.style.display = totalWeeks > 2 ? 'inline-block' : 'none';
+    }
+
+    function toggleHoliday(weekNum, dayId) {
+        const checkbox = document.getElementById(`holiday-w${weekNum}-${dayId}`);
+        const isHoliday = checkbox.checked;
+
+        sections.forEach(sec => {
+            sec.subjects.forEach(sub => {
+                const cellId = `w${weekNum}-${sec.type}-${sub.id}-${dayId}`;
+                const cell = document.getElementById(`cell-${cellId}`);
+                if (cell) {
+                    if (isHoliday) cell.classList.add('holiday-shaded');
+                    else cell.classList.remove('holiday-shaded');
+                }
+            });
+        });
+        saveData();
+    }
+
+    function toggleNoSubject(cellId) {
+        const cell = document.getElementById(`cell-${cellId}`);
+        if (!cell) return;
+        const noSubCb = document.getElementById(`nosub-${cellId}`);
+
+        if (noSubCb.checked) {
+            cell.classList.add('no-subject-shaded');
+        } else {
+            cell.classList.remove('no-subject-shaded');
+        }
+        saveData();
     }
 
     function toggleComplete(cellId) {
         const cell = document.getElementById(`cell-${cellId}`);
-        const checkbox = cell.querySelector('input[type="checkbox"]');
+        if (!cell) return;
+        const checkboxes = cell.querySelectorAll('input[type="checkbox"]');
+        const doneCb = checkboxes[0]; // First checkbox is Done
         const select = cell.querySelector('.status-select');
 
-        if (checkbox.checked) {
+        if (doneCb.checked) {
             cell.classList.add('completed-cell');
             select.value = 'done';
         } else {
             cell.classList.remove('completed-cell');
             if (select.value === 'done') select.value = 'pending';
         }
-        updateStatus(select);
+        updateStatusVisual(select);
+        saveData();
     }
 
-    function updateStatus(selectElement) {
+    function cascadeLessonsForward(weekNum, secType, subId, startIndex, newTextForStart) {
+        let textToPush = newTextForStart;
+
+        for (let i = startIndex; i < days.length; i++) {
+            const currentDayId = days[i].id;
+            const cell = document.getElementById(`cell-w${weekNum}-${secType}-${subId}-${currentDayId}`);
+            if (!cell) break;
+
+            const input = cell.querySelector('.lesson-input');
+            const existingText = input.value;
+
+            input.value = textToPush;
+            textToPush = existingText;
+
+            if (!textToPush) break;
+        }
+    }
+
+    function handleStatusChange(selectElement, weekNum, secType, subId, dayId) {
+        const val = selectElement.value;
+        updateStatusVisual(selectElement);
+
+        const dayIndex = days.findIndex(d => d.id === dayId);
+        const currentCell = document.getElementById(`cell-w${weekNum}-${secType}-${subId}-${dayId}`);
+        const currentInput = currentCell.querySelector('.lesson-input');
+        const originalText = currentInput.value;
+
+        if (val === 'move') {
+            if (dayIndex < days.length - 1) {
+                currentInput.value = "";
+                cascadeLessonsForward(weekNum, secType, subId, dayIndex + 1, originalText);
+            } else {
+                alert("You are on Friday! To move lessons to next week, you can copy them over manually.");
+            }
+        }
+
+        if (val === 'split') {
+            if (dayIndex < days.length - 1) {
+                const part1 = originalText ? (originalText + " (Part 1)") : "Part 1";
+                const part2 = originalText ? (originalText + " (Part 2)") : "Part 2";
+
+                currentInput.value = part1;
+                cascadeLessonsForward(weekNum, secType, subId, dayIndex + 1, part2);
+            } else {
+                alert("Cannot split past Friday in the same week.");
+            }
+        }
+
+        saveData();
+    }
+
+    function updateStatusVisual(selectElement) {
         const val = selectElement.value;
         selectElement.setAttribute('data-status', val);
 
         const cell = selectElement.closest('td');
-        const checkbox = cell.querySelector('input[type="checkbox"]');
+        if (!cell) return;
+        const checkboxes = cell.querySelectorAll('input[type="checkbox"]');
+        const doneCb = checkboxes[0];
 
         if (val === 'done') {
-            checkbox.checked = true;
+            doneCb.checked = true;
             cell.classList.add('completed-cell');
         } else {
-            checkbox.checked = false;
+            doneCb.checked = false;
             cell.classList.remove('completed-cell');
         }
-        saveData();
     }
 
     function saveData() {
-        const data = { totalWeeks: totalWeeks, cells: {} };
+        const data = { totalWeeks: totalWeeks, weeksDates: {}, holidays: {}, noSubjects: {}, cells: {} };
+
+        for (let w = 1; w <= totalWeeks; w++) {
+            const dateInput = document.getElementById(`week-date-${w}`);
+            if (dateInput) data.weeksDates[w] = dateInput.value;
+
+            days.forEach(day => {
+                const holidayCb = document.getElementById(`holiday-w${w}-${day.id}`);
+                if (holidayCb) data.holidays[`w${w}-${day.id}`] = holidayCb.checked;
+            });
+        }
+
         document.querySelectorAll('td[id^="cell-"]').forEach(cell => {
             const id = cell.id.replace('cell-', '');
-            data.cells[id] = {
-                checked: cell.querySelector('input[type="checkbox"]').checked,
-                text: cell.querySelector('.lesson-input').value,
-                status: cell.querySelector('.status-select').value
-            };
+            const checkboxes = cell.querySelectorAll('input[type="checkbox"]');
+            const doneCb = checkboxes[0];
+            const noSubCb = checkboxes[1];
+            const textInput = cell.querySelector('.lesson-input');
+            const select = cell.querySelector('.status-select');
+
+            if (doneCb && textInput && select) {
+                data.cells[id] = {
+                    checked: doneCb.checked,
+                    noSubject: noSubCb ? noSubCb.checked : false,
+                    text: textInput.value,
+                    status: select.value
+                };
+            }
         });
-        localStorage.setItem('homeschoolPlannerHorizontal', JSON.stringify(data));
+
+        localStorage.setItem('homeschoolPlannerHorizontal_v6', JSON.stringify(data));
     }
 
     function loadData() {
-        const saved = localStorage.getItem('homeschoolPlannerHorizontal');
+        const saved = localStorage.getItem('homeschoolPlannerHorizontal_v6');
         if (!saved) return;
-        const data = JSON.parse(saved);
 
-        if (data.totalWeeks && data.totalWeeks !== totalWeeks) {
-            totalWeeks = data.totalWeeks;
-            buildPlannerHTML();
-            return;
-        }
+        try {
+            const data = JSON.parse(saved);
+            if (data.totalWeeks && data.totalWeeks !== totalWeeks) {
+                totalWeeks = data.totalWeeks;
+                buildPlannerHTML();
+                return;
+            }
 
-        if (data.cells) {
-            Object.keys(data.cells).forEach(id => {
-                const cell = document.getElementById(`cell-${id}`);
-                if (cell) {
-                    const item = data.cells[id];
-                    const checkbox = cell.querySelector('input[type="checkbox"]');
-                    const textInput = cell.querySelector('.lesson-input');
-                    const select = cell.querySelector('.status-select');
+            if (data.weeksDates) {
+                Object.keys(data.weeksDates).forEach(w => {
+                    const dateInput = document.getElementById(`week-date-${w}`);
+                    if (dateInput) dateInput.value = data.weeksDates[w];
+                });
+            }
 
-                    checkbox.checked = item.checked;
-                    textInput.value = item.text;
-                    select.value = item.status;
+            if (data.holidays) {
+                Object.keys(data.holidays).forEach(key => {
+                    const isOff = data.holidays[key];
+                    const checkbox = document.getElementById(`holiday-${key}`);
+                    if (checkbox && isOff) {
+                        checkbox.checked = true;
+                        const parts = key.split('-');
+                        const wNum = parts[0].replace('w', '');
+                        const dayId = parts[1];
+                        
+                        sections.forEach(sec => {
+                            sec.subjects.forEach(sub => {
+                                const cellId = `w${wNum}-${sec.type}-${sub.id}-${dayId}`;
+                                const cell = document.getElementById(`cell-${cellId}`);
+                                if (cell) cell.classList.add('holiday-shaded');
+                            });
+                        });
+                    }
+                });
+            }
 
-                    if (item.checked) cell.classList.add('completed-cell');
-                    select.setAttribute('data-status', item.status);
-                }
-            });
+            if (data.cells) {
+                Object.keys(data.cells).forEach(id => {
+                    const cell = document.getElementById(`cell-${id}`);
+                    if (cell) {
+                        const item = data.cells[id];
+                        const checkboxes = cell.querySelectorAll('input[type="checkbox"]');
+                        const doneCb = checkboxes[0];
+                        const noSubCb = checkboxes[1];
+                        const textInput = cell.querySelector('.lesson-input');
+                        const select = cell.querySelector('.status-select');
+
+                        if (doneCb && textInput && select) {
+                            doneCb.checked = item.checked || false;
+                            if (noSubCb) {
+                                noSubCb.checked = item.noSubject || false;
+                                if (item.noSubject) cell.classList.add('no-subject-shaded');
+                            }
+                            textInput.value = item.text || '';
+                            select.value = item.status || 'pending';
+
+                            if (item.checked) cell.classList.add('completed-cell');
+                            select.setAttribute('data-status', item.status || 'pending');
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+            console.log("Error loading saved data", e);
         }
     }
 
     document.addEventListener('input', (e) => {
-        if (e.target.classList.contains('lesson-input')) {
+        if (e.target.classList.contains('lesson-input') || e.target.classList.contains('date-input')) {
             saveData();
         }
     });
 
     function archivePlanner() {
         if (confirm("Are you sure you want to clear and archive this planner?")) {
-            localStorage.removeItem('homeschoolPlannerHorizontal');
+            localStorage.removeItem('homeschoolPlannerHorizontal_v6');
             totalWeeks = 2;
             buildPlannerHTML();
         }
     }
 
-    buildPlannerHTML();
+    window.addEventListener('DOMContentLoaded', () => {
+        buildPlannerHTML();
+    });
 </script>
 
 </body>
