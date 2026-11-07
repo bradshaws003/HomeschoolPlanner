@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homeschool Lesson Plan Book - Multi-Week Planner</title>
+    <title>Homeschool Lesson Plan Book</title>
     <style>
         :root {
             --tobias-main: #2b6cb0;
@@ -21,11 +21,11 @@
             background-color: var(--bg-body);
             color: var(--text);
             margin: 0;
-            padding: 24px;
+            padding: 16px;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -33,16 +33,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             background: #fff;
-            padding: 20px 24px;
+            padding: 16px 24px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             margin: 0;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: #1a202c;
         }
 
@@ -62,107 +62,88 @@
         }
 
         .btn:hover { background-color: #2b6cb0; }
-
-        .btn-archive {
-            background-color: #e2e8f0;
-            color: #4a5568;
-        }
+        .btn-archive { background-color: #e2e8f0; color: #4a5568; }
         .btn-archive:hover { background-color: #cbd5e0; }
 
         .week-card {
             background: #ffffff;
             border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
+            padding: 20px;
+            margin-bottom: 28px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
             border: 2px solid #e2e8f0;
         }
 
         .week-header {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: #2d3748;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             padding-bottom: 8px;
             border-bottom: 2px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .day-section {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid #e2e8f0;
+        .table-responsive {
+            overflow-x: auto;
         }
 
-        .day-title {
-            font-size: 1.1rem;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 10px;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #edf2f7;
+            font-size: 0.9rem;
             font-weight: 700;
             color: #4a5568;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-align: center;
         }
 
-        .section-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
-            border-left: 6px solid #cbd5e0;
-            border-top: 1px solid #edf2f7;
-            border-right: 1px solid #edf2f7;
-            border-bottom: 1px solid #edf2f7;
+        th.day-col {
+            width: 18%;
         }
 
-        .section-card.tobias { border-left-color: var(--tobias-main); }
-        .section-card.ariella { border-left-color: var(--ariella-main); }
-        .section-card.joint { border-left-color: var(--joint-main); }
-
-        h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        th.subject-col {
+            width: 28%;
+            text-align: left;
         }
 
-        .tobias h3 { color: var(--tobias-main); }
-        .ariella h3 { color: var(--ariella-main); }
-        .joint h3 { color: #b7791f; }
-
-        .lesson-row {
-            display: grid;
-            grid-template-columns: 24px 170px 1fr 150px;
-            gap: 10px;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
+        .category-row-header {
+            background-color: #f7fafc;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 8px 12px;
         }
 
-        .lesson-row:last-child { border-bottom: none; }
+        .category-row-header.joint { background-color: var(--joint-bg); color: #b7791f; border-left: 5px solid var(--joint-main); }
+        .category-row-header.tobias { background-color: var(--tobias-bg); color: var(--tobias-main); border-left: 5px solid var(--tobias-main); }
+        .category-row-header.ariella { background-color: var(--ariella-bg); color: var(--ariella-main); border-left: 5px solid var(--ariella-main); }
 
-        .lesson-row input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .subject-label {
+        .subject-cell {
             font-weight: 600;
             font-size: 0.9rem;
+            background: #fff;
+        }
+
+        .lesson-cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .lesson-input {
             width: 100%;
-            padding: 6px 10px;
+            padding: 6px 8px;
             border: 1px solid #cbd5e0;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 0.85rem;
             box-sizing: border-box;
         }
@@ -170,15 +151,21 @@
         .lesson-input:focus {
             outline: none;
             border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+        }
+
+        .row-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .status-select {
-            padding: 6px;
-            border-radius: 6px;
+            padding: 4px;
+            border-radius: 4px;
             border: 1px solid #cbd5e0;
             background: #fff;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
         }
@@ -188,24 +175,18 @@
         .status-select[data-status="move"] { background-color: #e9d8fd; color: #441239; border-color: #d6bcfa; }
         .status-select[data-status="split"] { background-color: #fed7d7; color: #742a2a; border-color: #feb2b2; }
 
-        .completed-row .subject-label,
-        .completed-row .lesson-input {
+        .completed-cell .lesson-input {
             text-decoration: line-through;
             opacity: 0.6;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .lesson-row {
-                grid-template-columns: 24px 1fr;
-                gap: 6px;
-            }
-            .subject-label { grid-column: 2; }
-            .lesson-input { grid-column: 1 / -1; }
-            .status-select { grid-column: 1 / -1; }
+        .checkbox-label {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            color: #4a5568;
         }
     </style>
 </head>
@@ -215,11 +196,11 @@
     <header>
         <div>
             <h1>📖 Homeschool Lesson Plan Book</h1>
-            <small style="color: #718096;">Multi-Week Planner & Trackers</small>
+            <small style="color: #718096;">Horizontal Weekly Grid</small>
         </div>
         <div class="header-actions">
             <button class="btn" id="add-week-btn" onclick="toggleWeek3()">+ Add Week 3</button>
-            <button class="btn btn-archive" onclick="archivePlanner()">Archive & Clear Completed</button>
+            <button class="btn btn-archive" onclick="archivePlanner()">Archive & Clear</button>
         </div>
     </header>
 
@@ -235,7 +216,7 @@
         { id: 'fri', name: 'Friday' }
     ];
 
-    const subjectsConfig = [
+    const sections = [
         {
             type: 'joint',
             title: '✨ Joint Routine (Both Kids)',
@@ -266,7 +247,7 @@
         }
     ];
 
-    let totalWeeks = 2; // Default to 2 weeks visible
+    let totalWeeks = 2;
 
     function buildPlannerHTML() {
         const container = document.getElementById('planner-container');
@@ -275,174 +256,40 @@
         for (let w = 1; w <= totalWeeks; w++) {
             html += `
                 <div class="week-card" id="week-${w}">
-                    <div class="week-header">
-                        <span>📅 Week ${w} Planner</span>
-                    </div>
+                    <div class="week-header">📅 Week ${w}</div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="subject-col">Subject / Routine</th>
             `;
 
             days.forEach(day => {
+                html += `<th class="day-col">${day.name}</th>`;
+            });
+
+            html += `
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            sections.forEach(sec => {
                 html += `
-                    <div class="day-section">
-                        <div class="day-title">📌 ${day.name}</div>
+                    <tr>
+                        <td colspan="${days.length + 1}" class="category-row-header ${sec.type}">${sec.title}</td>
+                    </tr>
                 `;
 
-                subjectsConfig.forEach(sec => {
+                sec.subjects.forEach(sub => {
                     html += `
-                        <div class="section-card ${sec.type}">
-                            <h3>${sec.title}</h3>
+                        <tr>
+                            <td class="subject-cell">${sub.label}</td>
                     `;
 
-                    sec.subjects.forEach(sub => {
-                        const rowId = `w${w}-${day.id}-${sub.id}`;
+                    days.forEach(day => {
+                        const cellId = `w${w}-${sec.type}-${sub.id}-${day.id}`;
                         html += `
-                            <div class="lesson-row" id="row-${rowId}">
-                                <input type="checkbox" onchange="toggleComplete('row-${rowId}')">
-                                <span class="subject-label">${sub.label}</span>
-                                <input type="text" class="lesson-input" placeholder="e.g., ${sub.placeholder}">
-                                <select class="status-select" onchange="updateStatus(this)" data-status="pending">
-                                    <option value="pending">Not Started</option>
-                                    <option value="progress">In Progress</option>
-                                    <option value="done">Completed</option>
-                                    <option value="move">Move to Next Day</option>
-                                    <option value="split">Split Lesson</option>
-                                </select>
-                            </div>
-                        `;
-                    });
-
-                    html += `</div>`;
-                });
-
-                html += `</div>`;
-            });
-
-            html += `</div>`;
-        }
-
-        container.innerHTML = html;
-        loadData();
-        updateWeek3ButtonText();
-    }
-
-    function toggleWeek3() {
-        if (totalWeeks === 2) {
-            totalWeeks = 3;
-        } else {
-            totalWeeks = 2;
-        }
-        buildPlannerHTML();
-        saveData();
-    }
-
-    function updateWeek3ButtonText() {
-        const btn = document.getElementById('add-week-btn');
-        if (totalWeeks === 3) {
-            btn.innerText = '- Remove Week 3';
-            btn.style.backgroundColor = '#e53e3e';
-        } else {
-            btn.innerText = '+ Add Week 3';
-            btn.style.backgroundColor = '#3182ce';
-        }
-    }
-
-    function toggleComplete(rowId) {
-        const row = document.getElementById(rowId);
-        const checkbox = row.querySelector('input[type="checkbox"]');
-        const select = row.querySelector('.status-select');
-
-        if (checkbox.checked) {
-            row.classList.add('completed-row');
-            select.value = 'done';
-        } else {
-            row.classList.remove('completed-row');
-            if (select.value === 'done') select.value = 'pending';
-        }
-        updateStatus(select);
-    }
-
-    function updateStatus(selectElement) {
-        const val = selectElement.value;
-        selectElement.setAttribute('data-status', val);
-
-        const row = selectElement.closest('.lesson-row');
-        const checkbox = row.querySelector('input[type="checkbox"]');
-
-        if (val === 'done') {
-            checkbox.checked = true;
-            row.classList.add('completed-row');
-        } else {
-            checkbox.checked = false;
-            row.classList.remove('completed-row');
-        }
-        saveData();
-    }
-
-    function saveData() {
-        const data = { totalWeeks: totalWeeks, rows: {} };
-        document.querySelectorAll('.lesson-row').forEach(row => {
-            const id = row.id;
-            data.rows[id] = {
-                checked: row.querySelector('input[type="checkbox"]').checked,
-                text: row.querySelector('.lesson-input').value,
-                status: row.querySelector('.status-select').value
-            };
-        });
-        localStorage.setItem('homeschoolPlannerDataMulti', JSON.stringify(data));
-    }
-
-    function loadData() {
-        const saved = localStorage.getItem('homeschoolPlannerDataMulti');
-        if (!saved) return;
-        const data = JSON.parse(saved);
-
-        if (data.totalWeeks) {
-            totalWeeks = data.totalWeeks;
-            // Re-render if saved state has 3 weeks but current render has 2
-            const currentWeeksCount = document.querySelectorAll('.week-card').length;
-            if (totalWeeks !== currentWeeksCount) {
-                buildPlannerHTML();
-                return;
-            }
-        }
-
-        if (data.rows) {
-            Object.keys(data.rows).forEach(id => {
-                const row = document.getElementById(id);
-                if (row) {
-                    const item = data.rows[id];
-                    const checkbox = row.querySelector('input[type="checkbox"]');
-                    const textInput = row.querySelector('.lesson-input');
-                    const select = row.querySelector('.status-select');
-
-                    checkbox.checked = item.checked;
-                    textInput.value = item.text;
-                    select.value = item.status;
-
-                    if (item.checked) row.classList.add('completed-row');
-                    select.setAttribute('data-status', item.status);
-                }
-            });
-        }
-    }
-
-    // Auto-save typing changes
-    document.addEventListener('input', (e) => {
-        if (e.target.classList.contains('lesson-input')) {
-            saveData();
-        }
-    });
-
-    function archivePlanner() {
-        if (confirm("Are you ready to archive and clear this planner to start fresh?")) {
-            localStorage.removeItem('homeschoolPlannerDataMulti');
-            totalWeeks = 2;
-            buildPlannerHTML();
-        }
-    }
-
-    // Initial load on page start
-    buildPlannerHTML();
-</script>
-
-</body>
-</html>
+                            <td id="cell-${cellId}">
+                                <div class="lesson-cell-content">
+                                    <input type="
