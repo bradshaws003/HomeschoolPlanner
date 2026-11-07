@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homeschool Lesson Plan Book</title>
+    <title>Homeschool Lesson Plan Book - Multi-Week Planner</title>
     <style>
         :root {
             --tobias-main: #2b6cb0;
             --tobias-bg: #ebf8ff;
-            --tobias-border: #bee3f8;
             --ariella-main: #d53f8c;
             --ariella-bg: #fff5f7;
-            --ariella-border: #fed7e2;
             --joint-main: #d69e2e;
             --joint-bg: #fffff0;
-            --joint-border: #fefcbf;
             --text: #2d3748;
             --bg-body: #f7fafc;
         }
@@ -28,7 +25,7 @@
         }
 
         .container {
-            max-width: 950px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
@@ -49,9 +46,14 @@
             color: #1a202c;
         }
 
-        .btn-reset {
-            background-color: #e2e8f0;
-            color: #4a5568;
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: #3182ce;
+            color: white;
             border: none;
             padding: 8px 16px;
             border-radius: 6px;
@@ -59,59 +61,91 @@
             font-weight: 600;
         }
 
-        .btn-reset:hover {
-            background-color: #cbd5e0;
+        .btn:hover { background-color: #2b6cb0; }
+
+        .btn-archive {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        .btn-archive:hover { background-color: #cbd5e0; }
+
+        .week-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            border: 2px solid #e2e8f0;
+        }
+
+        .week-header {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .day-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .section-card {
             background: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border-left: 8px solid #cbd5e0;
-        }
-
-        .section-card.tobias {
-            border-left-color: var(--tobias-main);
-            background-color: #ffffff;
-        }
-
-        .section-card.ariella {
-            border-left-color: var(--ariella-main);
-            background-color: #ffffff;
-        }
-
-        .section-card.joint {
-            border-left-color: var(--joint-main);
-            background-color: #ffffff;
-        }
-
-        h2 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tobias h2 { color: var(--tobias-main); }
-        .ariella h2 { color: var(--ariella-main); }
-        .joint h2 { color: #b7791f; }
-
-        .lesson-row {
-            display: grid;
-            grid-template-columns: 24px 180px 1fr 160px;
-            gap: 12px;
-            align-items: center;
-            padding: 12px 0;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-left: 6px solid #cbd5e0;
+            border-top: 1px solid #edf2f7;
+            border-right: 1px solid #edf2f7;
             border-bottom: 1px solid #edf2f7;
         }
 
-        .lesson-row:last-child {
-            border-bottom: none;
+        .section-card.tobias { border-left-color: var(--tobias-main); }
+        .section-card.ariella { border-left-color: var(--ariella-main); }
+        .section-card.joint { border-left-color: var(--joint-main); }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .tobias h3 { color: var(--tobias-main); }
+        .ariella h3 { color: var(--ariella-main); }
+        .joint h3 { color: #b7791f; }
+
+        .lesson-row {
+            display: grid;
+            grid-template-columns: 24px 170px 1fr 150px;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .lesson-row:last-child { border-bottom: none; }
 
         .lesson-row input[type="checkbox"] {
             width: 18px;
@@ -120,16 +154,16 @@
         }
 
         .subject-label {
-            font-weight: 700;
-            font-size: 0.95rem;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .lesson-input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-sizing: border-box;
         }
 
@@ -140,16 +174,15 @@
         }
 
         .status-select {
-            padding: 8px;
+            padding: 6px;
             border-radius: 6px;
             border: 1px solid #cbd5e0;
             background: #fff;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
         }
 
-        /* Status Colors */
         .status-select[data-status="done"] { background-color: #c6f6d5; color: #22543d; border-color: #9ae6b4; }
         .status-select[data-status="progress"] { background-color: #feebc8; color: #744210; border-color: #fbd38d; }
         .status-select[data-status="move"] { background-color: #e9d8fd; color: #441239; border-color: #d6bcfa; }
@@ -161,10 +194,14 @@
             opacity: 0.6;
         }
 
+        .hidden {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .lesson-row {
                 grid-template-columns: 24px 1fr;
-                gap: 8px;
+                gap: 6px;
             }
             .subject-label { grid-column: 2; }
             .lesson-input { grid-column: 1 / -1; }
@@ -178,160 +215,136 @@
     <header>
         <div>
             <h1>📖 Homeschool Lesson Plan Book</h1>
-            <small style="color: #718096;">Weekly Planner & Trackers</small>
+            <small style="color: #718096;">Multi-Week Planner & Trackers</small>
         </div>
-        <button class="btn-reset" onclick="resetWeek()">Reset Week</button>
+        <div class="header-actions">
+            <button class="btn" id="add-week-btn" onclick="toggleWeek3()">+ Add Week 3</button>
+            <button class="btn btn-archive" onclick="archivePlanner()">Archive & Clear Completed</button>
+        </div>
     </header>
 
-    <!-- JOINT SUBJECTS -->
-    <div class="section-card joint">
-        <h2>✨ Joint Routine (Both Kids)</h2>
-        
-        <div class="lesson-row" id="row-joint-recitation">
-            <input type="checkbox" onchange="toggleComplete('row-joint-recitation')">
-            <span class="subject-label">MP Recitation</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Week 4 memory verses...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-joint-bible">
-            <input type="checkbox" onchange="toggleComplete('row-joint-bible')">
-            <span class="subject-label">MP Bible</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Lessons 12-14...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-joint-enrichment">
-            <input type="checkbox" onchange="toggleComplete('row-joint-enrichment')">
-            <span class="subject-label">MP Enrichment</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Read-aloud & Art project...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-joint-prodigies">
-            <input type="checkbox" onchange="toggleComplete('row-joint-prodigies')">
-            <span class="subject-label">Prodigies Music</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Video 3 & Deskbell practice...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- TOBIAS (BLUE) -->
-    <div class="section-card tobias">
-        <h2>📘 Tobias (Older)</h2>
-
-        <div class="lesson-row" id="row-tobias-math">
-            <input type="checkbox" onchange="toggleComplete('row-tobias-math')">
-            <span class="subject-label">Singapore Math</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Textbook p. 45-50, Workbook Ex 12...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-tobias-loe">
-            <input type="checkbox" onchange="toggleComplete('row-tobias-loe')">
-            <span class="subject-label">Logic of English</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Essentials Lesson 8, List B...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-tobias-latin">
-            <input type="checkbox" onchange="toggleComplete('row-tobias-latin')">
-            <span class="subject-label">Memoria Press Latin</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Lesson 4 vocabulary & exercises...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-tobias-piano">
-            <input type="checkbox" onchange="toggleComplete('row-tobias-piano')">
-            <span class="subject-label">Piano</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Daily 15 min practice, Scale C Major...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- ARIELLA (PINK) -->
-    <div class="section-card ariella">
-        <h2>🌸 Ariella</h2>
-
-        <div class="lesson-row" id="row-ariella-math">
-            <input type="checkbox" onchange="toggleComplete('row-ariella-math')">
-            <span class="subject-label">Singapore Math</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Lessons 15-18, Unit 2 workbook...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-
-        <div class="lesson-row" id="row-ariella-loe">
-            <input type="checkbox" onchange="toggleComplete('row-ariella-loe')">
-            <span class="subject-label">Logic of English</span>
-            <input type="text" class="lesson-input" placeholder="e.g., Foundations Level B, Lesson 42...">
-            <select class="status-select" onchange="updateStatus(this)">
-                <option value="pending">Not Started</option>
-                <option value="progress">In Progress</option>
-                <option value="done">Completed</option>
-                <option value="move">Move to Next Day</option>
-                <option value="split">Split Lesson</option>
-            </select>
-        </div>
-    </div>
-
+    <div id="planner-container"></div>
 </div>
 
 <script>
-    // Handle checkbox strike-through
+    const days = [
+        { id: 'mon', name: 'Monday' },
+        { id: 'tue', name: 'Tuesday' },
+        { id: 'wed', name: 'Wednesday' },
+        { id: 'thu', name: 'Thursday' },
+        { id: 'fri', name: 'Friday' }
+    ];
+
+    const subjectsConfig = [
+        {
+            type: 'joint',
+            title: '✨ Joint Routine (Both Kids)',
+            subjects: [
+                { id: 'joint-recitation', label: 'MP Recitation', placeholder: 'Memory verses...' },
+                { id: 'joint-bible', label: 'MP Bible', placeholder: 'Lessons...' },
+                { id: 'joint-enrichment', label: 'MP Enrichment', placeholder: 'Read-aloud & Art...' },
+                { id: 'joint-prodigies', label: 'Prodigies Music', placeholder: 'Video & bells...' }
+            ]
+        },
+        {
+            type: 'tobias',
+            title: '📘 Tobias',
+            subjects: [
+                { id: 'tobias-math', label: 'Singapore Math', placeholder: 'Textbook / Workbook...' },
+                { id: 'tobias-loe', label: 'Logic of English', placeholder: 'Essentials Lesson...' },
+                { id: 'tobias-latin', label: 'Memoria Press Latin', placeholder: 'Vocabulary & exercises...' },
+                { id: 'tobias-piano', label: 'Piano', placeholder: 'Practice & scales...' }
+            ]
+        },
+        {
+            type: 'ariella',
+            title: '🌸 Ariella',
+            subjects: [
+                { id: 'ariella-math', label: 'Singapore Math', placeholder: 'Lessons & workbook...' },
+                { id: 'ariella-loe', label: 'Logic of English', placeholder: 'Foundations Level...' }
+            ]
+        }
+    ];
+
+    let totalWeeks = 2; // Default to 2 weeks visible
+
+    function buildPlannerHTML() {
+        const container = document.getElementById('planner-container');
+        let html = '';
+
+        for (let w = 1; w <= totalWeeks; w++) {
+            html += `
+                <div class="week-card" id="week-${w}">
+                    <div class="week-header">
+                        <span>📅 Week ${w} Planner</span>
+                    </div>
+            `;
+
+            days.forEach(day => {
+                html += `
+                    <div class="day-section">
+                        <div class="day-title">📌 ${day.name}</div>
+                `;
+
+                subjectsConfig.forEach(sec => {
+                    html += `
+                        <div class="section-card ${sec.type}">
+                            <h3>${sec.title}</h3>
+                    `;
+
+                    sec.subjects.forEach(sub => {
+                        const rowId = `w${w}-${day.id}-${sub.id}`;
+                        html += `
+                            <div class="lesson-row" id="row-${rowId}">
+                                <input type="checkbox" onchange="toggleComplete('row-${rowId}')">
+                                <span class="subject-label">${sub.label}</span>
+                                <input type="text" class="lesson-input" placeholder="e.g., ${sub.placeholder}">
+                                <select class="status-select" onchange="updateStatus(this)" data-status="pending">
+                                    <option value="pending">Not Started</option>
+                                    <option value="progress">In Progress</option>
+                                    <option value="done">Completed</option>
+                                    <option value="move">Move to Next Day</option>
+                                    <option value="split">Split Lesson</option>
+                                </select>
+                            </div>
+                        `;
+                    });
+
+                    html += `</div>`;
+                });
+
+                html += `</div>`;
+            });
+
+            html += `</div>`;
+        }
+
+        container.innerHTML = html;
+        loadData();
+        updateWeek3ButtonText();
+    }
+
+    function toggleWeek3() {
+        if (totalWeeks === 2) {
+            totalWeeks = 3;
+        } else {
+            totalWeeks = 2;
+        }
+        buildPlannerHTML();
+        saveData();
+    }
+
+    function updateWeek3ButtonText() {
+        const btn = document.getElementById('add-week-btn');
+        if (totalWeeks === 3) {
+            btn.innerText = '- Remove Week 3';
+            btn.style.backgroundColor = '#e53e3e';
+        } else {
+            btn.innerText = '+ Add Week 3';
+            btn.style.backgroundColor = '#3182ce';
+        }
+    }
+
     function toggleComplete(rowId) {
         const row = document.getElementById(rowId);
         const checkbox = row.querySelector('input[type="checkbox"]');
@@ -345,10 +358,8 @@
             if (select.value === 'done') select.value = 'pending';
         }
         updateStatus(select);
-        saveData();
     }
 
-    // Handle status dropdown color changes
     function updateStatus(selectElement) {
         const val = selectElement.value;
         selectElement.setAttribute('data-status', val);
@@ -366,59 +377,71 @@
         saveData();
     }
 
-    // Save inputs to browser memory
     function saveData() {
-        const data = {};
+        const data = { totalWeeks: totalWeeks, rows: {} };
         document.querySelectorAll('.lesson-row').forEach(row => {
             const id = row.id;
-            data[id] = {
+            data.rows[id] = {
                 checked: row.querySelector('input[type="checkbox"]').checked,
                 text: row.querySelector('.lesson-input').value,
                 status: row.querySelector('.status-select').value
             };
         });
-        localStorage.setItem('homeschoolPlannerData', JSON.stringify(data));
+        localStorage.setItem('homeschoolPlannerDataMulti', JSON.stringify(data));
     }
 
-    // Load saved inputs on page launch
     function loadData() {
-        const saved = localStorage.getItem('homeschoolPlannerData');
+        const saved = localStorage.getItem('homeschoolPlannerDataMulti');
         if (!saved) return;
         const data = JSON.parse(saved);
 
-        Object.keys(data).forEach(id => {
-            const row = document.getElementById(id);
-            if (row) {
-                const item = data[id];
-                const checkbox = row.querySelector('input[type="checkbox"]');
-                const textInput = row.querySelector('.lesson-input');
-                const select = row.querySelector('.status-select');
-
-                checkbox.checked = item.checked;
-                textInput.value = item.text;
-                select.value = item.status;
-
-                if (item.checked) row.classList.add('completed-row');
-                select.setAttribute('data-status', item.status);
+        if (data.totalWeeks) {
+            totalWeeks = data.totalWeeks;
+            // Re-render if saved state has 3 weeks but current render has 2
+            const currentWeeksCount = document.querySelectorAll('.week-card').length;
+            if (totalWeeks !== currentWeeksCount) {
+                buildPlannerHTML();
+                return;
             }
-        });
-    }
+        }
 
-    // Add auto-save listeners to text boxes
-    document.querySelectorAll('.lesson-input').forEach(input => {
-        input.addEventListener('input', saveData);
-    });
+        if (data.rows) {
+            Object.keys(data.rows).forEach(id => {
+                const row = document.getElementById(id);
+                if (row) {
+                    const item = data.rows[id];
+                    const checkbox = row.querySelector('input[type="checkbox"]');
+                    const textInput = row.querySelector('.lesson-input');
+                    const select = row.querySelector('.status-select');
 
-    // Reset button
-    function resetWeek() {
-        if (confirm("Reset all lesson inputs, checkboxes, and statuses for a new week?")) {
-            localStorage.removeItem('homeschoolPlannerData');
-            location.reload();
+                    checkbox.checked = item.checked;
+                    textInput.value = item.text;
+                    select.value = item.status;
+
+                    if (item.checked) row.classList.add('completed-row');
+                    select.setAttribute('data-status', item.status);
+                }
+            });
         }
     }
 
-    // Initial load
-    loadData();
+    // Auto-save typing changes
+    document.addEventListener('input', (e) => {
+        if (e.target.classList.contains('lesson-input')) {
+            saveData();
+        }
+    });
+
+    function archivePlanner() {
+        if (confirm("Are you ready to archive and clear this planner to start fresh?")) {
+            localStorage.removeItem('homeschoolPlannerDataMulti');
+            totalWeeks = 2;
+            buildPlannerHTML();
+        }
+    }
+
+    // Initial load on page start
+    buildPlannerHTML();
 </script>
 
 </body>
