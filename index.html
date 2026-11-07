@@ -292,4 +292,150 @@
                         html += `
                             <td id="cell-${cellId}">
                                 <div class="lesson-cell-content">
-                                    <input type="
+                                    <input type="text" class="lesson-input" placeholder="${sub.placeholder}">
+                                    <div class="row-controls">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" onchange="toggleComplete('${cellId}')"> Done
+                                        </label>
+                                        <select class="status-select" onchange="updateStatus(this)" data-status="pending">
+                                            <option value="pending">Normal</option>
+                                            <option value="progress">In Progress</option>
+                                            <option value="done">Completed</option>
+                                            <option value="move">Move Day</option>
+                                            <option value="split">Split</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </td>
+                        `;
+                    });
+
+                    html += `</tr>`;
+                });
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+        loadData();
+        updateWeek3ButtonText();
+    }
+
+    function toggleWeek3() {
+        totalWeeks = (totalWeeks === 2) ? 3 : 2;
+        buildPlannerHTML();
+        saveData();
+    }
+
+    function updateWeek3ButtonText() {
+        const btn = document.getElementById('add-week-btn');
+        if (totalWeeks === 3) {
+            btn.innerText = '- Remove Week 3';
+            btn.style.backgroundColor = '#e53e3e';
+        } else {
+            btn.innerText = '+ Add Week 3';
+            btn.style.backgroundColor = '#3182ce';
+        }
+    }
+
+    function toggleComplete(cellId) {
+        const cell = document.getElementById(`cell-${cellId}`);
+        const checkbox = cell.querySelector('input[type="checkbox"]');
+        const select = cell.querySelector('.status-select');
+
+        if (checkbox.checked) {
+            cell.classList.add('completed-cell');
+            select.value = 'done';
+        } else {
+            cell.classList.remove('completed-cell');
+            if (select.value === 'done') select.value = 'pending';
+        }
+        updateStatus(select);
+    }
+
+    function updateStatus(selectElement) {
+        const val = selectElement.value;
+        selectElement.setAttribute('data-status', val);
+
+        const cell = selectElement.closest('td');
+        const checkbox = cell.querySelector('input[type="checkbox"]');
+
+        if (val === 'done') {
+            checkbox.checked = true;
+            cell.classList.add('completed-cell');
+        } else {
+            checkbox.checked = false;
+            cell.classList.remove('completed-cell');
+        }
+        saveData();
+    }
+
+    function saveData() {
+        const data = { totalWeeks: totalWeeks, cells: {} };
+        document.querySelectorAll('td[id^="cell-"]').forEach(cell => {
+            const id = cell.id.replace('cell-', '');
+            data.cells[id] = {
+                checked: cell.querySelector('input[type="checkbox"]').checked,
+                text: cell.querySelector('.lesson-input').value,
+                status: cell.querySelector('.status-select').value
+            };
+        });
+        localStorage.setItem('homeschoolPlannerHorizontal', JSON.stringify(data));
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('homeschoolPlannerHorizontal');
+        if (!saved) return;
+        const data = JSON.parse(saved);
+
+        if (data.totalWeeks && data.totalWeeks !== totalWeeks) {
+            totalWeeks = data.totalWeeks;
+            buildPlannerHTML();
+            return;
+        }
+
+        if (data.cells) {
+            Object.keys(data.cells).forEach(id => {
+                const cell = document.getElementById(`cell-${id}`);
+                if (cell) {
+                    const item = data.cells[id];
+                    const checkbox = cell.querySelector('input[type="checkbox"]');
+                    const textInput = cell.querySelector('.lesson-input');
+                    const select = cell.querySelector('.status-select');
+
+                    checkbox.checked = item.checked;
+                    textInput.value = item.text;
+                    select.value = item.status;
+
+                    if (item.checked) cell.classList.add('completed-cell');
+                    select.setAttribute('data-status', item.status);
+                }
+            });
+        }
+    }
+
+    document.addEventListener('input', (e) => {
+        if (e.target.classList.contains('lesson-input')) {
+            saveData();
+        }
+    });
+
+    function archivePlanner() {
+        if (confirm("Are you sure you want to clear and archive this planner?")) {
+            localStorage.removeItem('homeschoolPlannerHorizontal');
+            totalWeeks = 2;
+            buildPlannerHTML();
+        }
+    }
+
+    buildPlannerHTML();
+</script>
+
+</body>
+</html>
